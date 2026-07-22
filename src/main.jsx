@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 
+//Function (ShadowRoot)
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <App />
