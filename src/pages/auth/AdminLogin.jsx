@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { FaEnvelope, FaLock, FaSignInAlt, FaUserPlus, FaShieldAlt } from "react-icons/fa";
+import { FaShieldAlt, FaEnvelope, FaLock, FaSignInAlt, FaArrowLeft } from "react-icons/fa";
 
-function Login() {
+function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, userProfile } = useAuth();
 
-  const handleLogin = async (e) => {
+  const handleAdminLogin = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -25,13 +25,13 @@ function Login() {
 
     try {
       await login(email, password);
-      navigate("/dashboard");
+      navigate("/admin/dashboard");
     } catch (err) {
-      console.error("Login error:", err);
+      console.error("Admin login error:", err);
       if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
-        setError("Invalid email or password. Please check your credentials.");
+        setError("Invalid administrative credentials.");
       } else {
-        setError(err.message || "Failed to log in. Please try again.");
+        setError(err.message || "Failed to log in as administrator.");
       }
     } finally {
       setSubmitting(false);
@@ -39,24 +39,25 @@ function Login() {
   };
 
   return (
-    <div className="auth-page-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h2>Welcome Back</h2>
-          <p>Login to report local issues & track complaints</p>
+    <div className="auth-page-container admin-bg">
+      <div className="auth-card admin-card">
+        <div className="auth-header admin-header">
+          <FaShieldAlt className="admin-badge-icon" />
+          <h2>Administrative Portal</h2>
+          <p>Sign in with your administrator credentials</p>
         </div>
 
         {error && <div className="error-banner">{error}</div>}
 
-        <form onSubmit={handleLogin} className="auth-form">
+        <form onSubmit={handleAdminLogin} className="auth-form">
           <div className="form-group">
-            <label htmlFor="email">Email Address</label>
+            <label htmlFor="admin-email">Admin Email</label>
             <div className="input-with-icon">
               <FaEnvelope className="input-icon" />
               <input
-                id="email"
+                id="admin-email"
                 type="email"
-                placeholder="enter your email address"
+                placeholder="admin@gramseva.gov.in"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -65,13 +66,13 @@ function Login() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="admin-password">Password</label>
             <div className="input-with-icon">
               <FaLock className="input-icon" />
               <input
-                id="password"
+                id="admin-password"
                 type="password"
-                placeholder="enter your password"
+                placeholder="Administrator password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -79,22 +80,17 @@ function Login() {
             </div>
           </div>
 
-          <button type="submit" className="btn-submit" disabled={submitting}>
-            {submitting ? "Signing In..." : <><FaSignInAlt /> Login</>}
+          <button type="submit" className="btn-submit btn-admin" disabled={submitting}>
+            {submitting ? "Authenticating..." : <><FaSignInAlt /> Admin Sign In</>}
           </button>
         </form>
 
         <div className="auth-footer">
-          <p>
-            Don't have an account? <Link to="/register"><FaUserPlus /> Register Here</Link>
-          </p>
-          <div className="admin-portal-link">
-            <Link to="/admin/login"><FaShieldAlt /> Are you an Administrator?</Link>
-          </div>
+          <Link to="/" className="back-link"><FaArrowLeft /> Return to Citizen Login</Link>
         </div>
       </div>
     </div>
   );
 }
 
-export default Login;
+export default AdminLogin;
